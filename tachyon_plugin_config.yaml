@@ -1,0 +1,8 @@
+name: http_client_plugin
+
+code_generator:
+  file: src/code_generator.dart
+  className: HttpClientCodeGenerator
+
+annotations:
+  - HttpService

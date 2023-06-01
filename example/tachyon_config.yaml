@@ -1,0 +1,8 @@
+file_generation_paths:
+  - "lib/**"
+
+generated_file_line_length: 100
+
+plugins:
+  - http_client_plugin
+  - data_class_plugin

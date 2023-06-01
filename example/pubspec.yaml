@@ -1,0 +1,18 @@
+name: example
+description: A sample command-line application.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  dio: ^5.1.1
+  http_client_plugin:
+    path: ../
+  data_class_plugin: ^1.0.1
+
+dev_dependencies:
+  lints: ^2.0.0
+  tachyon: ^0.0.5
+  test: ^1.21.0
