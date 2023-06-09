@@ -67,7 +67,7 @@ These `code actions` are similar to the ones provide by the language - e.g. `wra
 
 ## Generate the code you want!
 
-### DataClass Annotation
+### HttpService Annotation
 
 1. Create a simple class, annotate it with `@HttpService()`
 
