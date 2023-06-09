@@ -6,7 +6,7 @@ This plugin allows you to generate http services using `Dio` as your http client
 
 ## How it works
 
-**Http Client Plugin** uses `Tachyon` as it's build engine to provide fast code generation. Also this plugin uses the [analyzer](https://pub.dev/packages/analyzer) system and [analyzer plugin](https://pub.dev/packages/analyzer_plugin)
+**Http Client Plugin** uses `Tachyon` as its build engine to provide fast code generation. Also this plugin uses the [analyzer](https://pub.dev/packages/analyzer) system and [analyzer plugin](https://pub.dev/packages/analyzer_plugin)
 to get access on the source code, parse it and provide `code actions` based on that.
 
 These `code actions` are similar to the ones provide by the language - e.g. `wrap with try/catch` - so you don't need to rely on snippets or manually typing any boilerplate code.
@@ -23,7 +23,7 @@ These `code actions` are similar to the ones provide by the language - e.g. `wra
      tachyon: any
    ```
 
-1. Create `tachyon_config.yaml` on the project's root folder
+1. Create `tachyon_config.yaml` in the project's root folder
 
    ```yaml
    file_generation_paths: # which files/paths to include for build
@@ -36,7 +36,7 @@ These `code actions` are similar to the ones provide by the language - e.g. `wra
      - http_client_plugin # register http_client_plugin
    ```
 
-1. Update your `analysis_options.yaml` (to enable `code action`)
+1. Update your `analysis_options.yaml` (to enable `code actions`)
 
    **Minimal analysis_options.yaml**
 
@@ -76,7 +76,7 @@ These `code actions` are similar to the ones provide by the language - e.g. `wra
    class AppHttpService { ... }
    ```
 
-1. Add abstract methods annotated with `@HttpMethod.*` and add a return type of `FutureHttpResult<*>`
+1. Add an abstract method annotated with `@HttpMethod.*` and add a return type of `FutureHttpResult<*>`
 
    ```dart
    @HttpService()
@@ -145,7 +145,7 @@ See more options about tachyon by executing: `dart run tachyon --help`
      <br />
      <br />
 
-   Receives an required `path` parameter. The path can be an empty string.
+   Receives a required `path` parameter. The path can be an empty string.
 
    Example:
 
@@ -163,7 +163,7 @@ See more options about tachyon by executing: `dart run tachyon --help`
 
    Annotates a method's parameter as a query parameter.
 
-   Receives an optional alternative name for the query parameter name.
+   Receives an optional alternative name for the query parameter.
 
    ```dart
    @HttpService()
@@ -194,14 +194,14 @@ See more options about tachyon by executing: `dart run tachyon --help`
 
    Annotates a method's parameter as a path parameter.
 
-   In companion with [HttpMethod](#httpmethod) when a path segment starts with `:` matches
-   a parameter with the same name and that parameter is annotated with `@PathParam`.
+   Together with the [HttpMethod](#httpmethod) annotation, when a path segment starts with `:` , if
+   an annotated (`@PathParam`) parameter matches the segment name then the argument value will replace the segment.
 
    ```dart
    @HttpService()
    class AppHttpService {
 
-      @HttpMethod.get('/user/:id')
+      @HttpMethod.get('/user/:id') // this will become /user/<value of argument id>
       FutureHttpResult<User> getUser(@PathParam() int id);
 
    }
@@ -246,7 +246,7 @@ See more options about tachyon by executing: `dart run tachyon --help`
 
    Annotates a method as a multipart request.
 
-   Optionally accepts a parameter `listFormat` which indicates how a list should be formatted - default value `MultipartListFormat.multi`. See options [here](https://github.com/spideythewebhead/http_client_plugin/tree/main/lib/src/multipart_list_format.dart).
+   Optionally accepts a parameter `listFormat` which indicates how a list should be formatted - default value `MultipartListFormat.multi`. See all options [here](https://github.com/spideythewebhead/http_client_plugin/tree/main/lib/src/multipart_list_format.dart).
 
    ```dart
    @HttpService()
@@ -264,7 +264,7 @@ See more options about tachyon by executing: `dart run tachyon --help`
 
 1. ### HttpFormField
 
-   Annotates a method's parameter as form field for multipart request.
+   Annotates a method's parameter as form field for a multipart request.
 
    ```dart
    @HttpService()
@@ -280,7 +280,7 @@ See more options about tachyon by executing: `dart run tachyon --help`
    }
    ```
 
-   Multipart requests can also accept a file using the `HttpFormField.file` annotation. The parameter type for this annotation should be a String with a value that points to a file path.
+   Multipart requests can also accept a file using the `HttpFormField.file` annotation. The parameter type for this annotation should be a `String` with a value that points to a file path.
 
    ```dart
    @HttpService()
@@ -320,7 +320,7 @@ final AppHttpService httpService = AppHttpService();
 final HttpResult<User> result = await httpService.users.getById(11);
 ```
 
-Also http services can override the default `Dio` client by adding an abstract method:
+Also http services can override the default `Dio` client by adding an abstract method `overrideHttpClient`:
 
 ```dart
 @HttpService()
@@ -331,7 +331,7 @@ class UsersHttpService {
 
 ## Http methods
 
-Http methods must be must have a return type of `FutureHttpResult<*>`.
+Http methods must have a return type of `FutureHttpResult<*>`.
 
 `FutureHttpResult` is a shortcut for `Future<HttpResult<*>>`
 
