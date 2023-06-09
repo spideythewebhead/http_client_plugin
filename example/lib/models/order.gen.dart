@@ -24,6 +24,14 @@ class _$OrderImpl extends Order {
   }
 
   @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'status': status,
+    };
+  }
+
+  @override
   bool operator ==(Object? other) {
     return identical(this, other) ||
         other is Order &&
@@ -53,55 +61,4 @@ class _$OrderImpl extends Order {
 
   @override
   Type get runtimeType => Order;
-}
-
-class _$OrderCopyWithProxy {
-  _$OrderCopyWithProxy(this._value);
-
-  final Order _value;
-
-  @pragma('vm:prefer-inline')
-  Order id(String newValue) => this(id: newValue);
-
-  @pragma('vm:prefer-inline')
-  Order status(String newValue) => this(status: newValue);
-
-  @pragma('vm:prefer-inline')
-  Order call({
-    final String? id,
-    final String? status,
-  }) {
-    return _$OrderImpl(
-      id: id ?? _value.id,
-      status: status ?? _value.status,
-    );
-  }
-}
-
-class $OrderCopyWithProxyChain<$Result> {
-  $OrderCopyWithProxyChain(this._value, this._chain);
-
-  final Order _value;
-  final $Result Function(Order update) _chain;
-
-  @pragma('vm:prefer-inline')
-  $Result id(String newValue) => this(id: newValue);
-
-  @pragma('vm:prefer-inline')
-  $Result status(String newValue) => this(status: newValue);
-
-  @pragma('vm:prefer-inline')
-  $Result call({
-    final String? id,
-    final String? status,
-  }) {
-    return _chain(_$OrderImpl(
-      id: id ?? _value.id,
-      status: status ?? _value.status,
-    ));
-  }
-}
-
-extension $OrderExtension on Order {
-  _$OrderCopyWithProxy get copyWith => _$OrderCopyWithProxy(this);
 }

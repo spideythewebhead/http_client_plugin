@@ -32,6 +32,10 @@ class _$AppHttpServiceImpl extends AppHttpService {
 
   @override
   late final GooglePlacesService places = GooglePlacesService(_client, _pathPrefix);
+
+  @override
+  late final JsonPlaceholderHttpService jsonPlaceholder =
+      JsonPlaceholderHttpService(_client, _pathPrefix);
 }
 
 class _$UsersServiceImpl extends UsersService {

@@ -2,10 +2,7 @@ import 'package:data_class_plugin/data_class_plugin.dart';
 
 part 'payment_method.gen.dart';
 
-@DataClass(
-  fromJson: true,
-  toJson: true,
-)
+@DataClass()
 abstract class PaymentMethod {
   PaymentMethod.ctor();
 
@@ -17,13 +14,13 @@ abstract class PaymentMethod {
     required String issuer,
   }) = _$PaymentMethodImpl;
 
+  /// Creates an instance of [PaymentMethod] from [json]
+  factory PaymentMethod.fromJson(Map<dynamic, dynamic> json) = _$PaymentMethodImpl.fromJson;
+
   String get id;
   String get last4;
   String get expDate;
   String get issuer;
-
-  /// Creates an instance of [PaymentMethod] from [json]
-  factory PaymentMethod.fromJson(Map<dynamic, dynamic> json) = _$PaymentMethodImpl.fromJson;
 
   /// Converts [PaymentMethod] to a [Map] json
   Map<String, dynamic> toJson();

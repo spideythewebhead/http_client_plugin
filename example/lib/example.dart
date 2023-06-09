@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:example/jsonplaceholderapi.dart';
 import 'package:example/models/order.dart';
 import 'package:example/models/payment_method.dart';
 import 'package:example/models/user.dart';
@@ -22,6 +23,8 @@ abstract class AppHttpService {
   PaymentMethodsService get paymentMethods;
 
   GooglePlacesService get places;
+
+  JsonPlaceholderHttpService get jsonPlaceholder;
 }
 
 @HttpService('/users')
@@ -135,6 +138,10 @@ void main() async {
     BaseOptions(baseUrl: 'https://maps.googleapis.com'),
   ));
 
+  httpService.jsonPlaceholder.overrideHttpClient(Dio(
+    BaseOptions(baseUrl: 'https://jsonplaceholder.typicode.com'),
+  ));
+
   final HttpResult<User> getUserResult = await httpService.user.get(11);
   switch (getUserResult) {
     case HttpResultData<User>(:final User data):
@@ -143,5 +150,14 @@ void main() async {
       print(exception);
     default:
       print('Something went bad');
+  }
+
+  final HttpResult<Post> getPost = await httpService.jsonPlaceholder.posts.getById(1);
+  switch (getPost.asRecord()) {
+    case (Post? post, _, _) when post != null:
+      print('\nGot post');
+      print(post);
+    case (_, Exception? exception, _) when exception != null:
+      print(exception);
   }
 }

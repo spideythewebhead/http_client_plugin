@@ -1,0 +1,8 @@
+data_class:
+  options_config:
+    from_json:
+      default: true
+    to_json:
+      default: true
+    copy_with:
+      default: false
