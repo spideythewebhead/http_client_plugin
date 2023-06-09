@@ -1,44 +1,35 @@
+import 'package:http_client_plugin/src/multipart_list_format.dart';
 import 'package:meta/meta_meta.dart';
 
 @Target(<TargetKind>{TargetKind.classType})
 class HttpService {
   static const String name = 'HttpService';
 
-  const HttpService([this.path = '']);
-
-  final String path;
+  const HttpService([String path = '']);
 }
 
 @Target(<TargetKind>{TargetKind.method})
 class HttpMethod {
   static const String name = 'HttpMethod';
 
-  const HttpMethod.get(this.path) : method = 'GET';
-  const HttpMethod.post(this.path) : method = 'POST';
-  const HttpMethod.delete(this.path) : method = 'DELETE';
-  const HttpMethod.put(this.path) : method = 'PUT';
-
-  final String method;
-  final String path;
+  const HttpMethod.get(String path);
+  const HttpMethod.post(String path);
+  const HttpMethod.delete(String path);
+  const HttpMethod.put(String path);
 }
 
 @Target(<TargetKind>{TargetKind.method})
 class HttpHeader {
   static const String name = 'HttpHeader';
 
-  const HttpHeader(this.key, this.value);
-
-  final String key;
-  final String value;
+  const HttpHeader(String key, String value);
 }
 
 @Target(<TargetKind>{TargetKind.parameter})
 class QueryParam {
   static const String name = 'QueryParam';
 
-  const QueryParam([this.key]);
-
-  final String? key;
+  const QueryParam([String? key]);
 }
 
 @Target(<TargetKind>{TargetKind.parameter})
@@ -53,4 +44,27 @@ class HttpPayload {
   static const String name = 'HttpPayload';
 
   const HttpPayload();
+}
+
+@Target(<TargetKind>{TargetKind.method})
+class HttpMultipart {
+  static const String name = 'HttpMultipart';
+
+  const HttpMultipart({
+    MultipartListFormat listFormat = MultipartListFormat.multi,
+  });
+}
+
+@Target(<TargetKind>{TargetKind.parameter})
+class HttpFormField {
+  static const String name = 'HttpFormField';
+
+  const HttpFormField({
+    String? name,
+  });
+
+  const HttpFormField.file({
+    String? name,
+    String? fileName,
+  });
 }

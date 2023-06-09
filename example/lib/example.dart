@@ -35,6 +35,8 @@ abstract class UsersService {
 
   UsersService overrideHttpClient(Dio client);
 
+  OrdersService get orders;
+
   @HttpMethod.post('')
   FutureHttpResult<User> get(@QueryParam() int id);
 
@@ -43,7 +45,15 @@ abstract class UsersService {
     @HttpPayload() User data = const User(id: '11', username: '11'),
   });
 
-  OrdersService get orders;
+  @HttpMethod.post('/register')
+  @HttpMultipart()
+  FutureHttpResult<User> register({
+    @HttpFormField() required String username,
+    @HttpFormField() required String password,
+    @HttpFormField(name: 'user.name') required String name,
+    @HttpFormField() required int age,
+    @HttpFormField.file(name: 'picture') required String filePath,
+  });
 }
 
 @HttpService('/:userId/orders')

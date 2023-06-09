@@ -94,6 +94,37 @@ class _$UsersServiceImpl extends UsersService {
       rethrow;
     }
   }
+
+  @override
+  FutureHttpResult<User> register({
+    required String username,
+    required String password,
+    required String name,
+    required int age,
+    required String filePath,
+  }) async {
+    try {
+      final String path = '$_pathPrefix/register';
+      final Response<dynamic> response = await _client.post(
+        path,
+        data: await (() async {
+          final FormData data = FormData.fromMap({
+            'username': username,
+            'password': password,
+            'user.name': name,
+            'age': age,
+            'picture': await MultipartFile.fromFile(filePath),
+          }, ListFormat.multi);
+          return data;
+        })(),
+      );
+      return HttpResult<User>.data(User.fromJson(response.data!));
+    } on Exception catch (exception, stackTrace) {
+      return HttpResult<User>.failure(exception, stackTrace: stackTrace);
+    } catch (exception) {
+      rethrow;
+    }
+  }
 }
 
 class _$OrdersServiceImpl extends OrdersService {

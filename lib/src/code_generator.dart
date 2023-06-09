@@ -208,8 +208,29 @@ class HttpClientCodeGenerator extends TachyonPluginCodeGenerator {
         codeWriter
           ..write('final Response<dynamic> response = await _client.')
           ..write(httpMethod)
-          ..write('(path')
-          ..write(',');
+          ..write('(path, ');
+
+        if (method.metadata.hasAnnotationWithName(HttpMultipart.name)) {
+          await _writeFormData(
+            methodDeclaration: method,
+            codeWriter: codeWriter,
+            declarationFinder: declarationFinder,
+            logger: logger,
+            buildInfo: buildInfo,
+          );
+        } else {
+          final FormalParameter? bodyParameter =
+              method.parameters?.parameters.firstWhereOrNull((FormalParameter parameter) {
+            return parameter.metadata.hasAnnotationWithName(HttpPayload.name);
+          });
+          if (bodyParameter != null) {
+            await _writeHttpPayloadData(
+              bodyParameter: bodyParameter,
+              codeWriter: codeWriter,
+              declarationFinder: declarationFinder,
+            );
+          }
+        }
 
         if (queryParameters.isNotEmpty) {
           codeWriter.write('queryParameters: <String, String>{');
@@ -219,41 +240,6 @@ class HttpClientCodeGenerator extends TachyonPluginCodeGenerator {
           }
 
           codeWriter.write('},');
-        }
-
-        final FormalParameter? bodyParameter = method.parameters?.parameters.firstWhereOrNull(
-            (FormalParameter parameter) =>
-                parameter.metadata.hasAnnotationWithName(HttpPayload.name));
-
-        if (bodyParameter != null) {
-          final String parameterName = bodyParameter.name!.lexeme;
-          TachyonDartType type = TachyonDartType.dynamic;
-          if (bodyParameter is SimpleFormalParameter) {
-            type = bodyParameter.type.customDartType;
-          } else if (bodyParameter is DefaultFormalParameter &&
-              bodyParameter.parameter is SimpleFormalParameter) {
-            type = (bodyParameter.parameter as SimpleFormalParameter).type.customDartType;
-          }
-
-          codeWriter.write('data: ');
-          if (type.isPrimitive || type.isDynamic || type.isCollection) {
-            codeWriter.write(parameterName);
-          } else if (type.isUri) {
-            codeWriter.write('$parameterName.toString()');
-          } else if (type.isDateTime) {
-            codeWriter.write('$parameterName.toIso8601String()');
-          } else {
-            final NamedCompilationUnitMember? variableTypeDeclaration = await declarationFinder
-                .findClassOrEnum(type.name)
-                .then((ClassOrEnumDeclarationMatch? match) => match?.node);
-            if (variableTypeDeclaration is ClassDeclaration &&
-                    variableTypeDeclaration.hasMethod('toJson') ||
-                variableTypeDeclaration is EnumDeclaration &&
-                    variableTypeDeclaration.hasMethod('toJson')) {
-              codeWriter.write('$parameterName.toJson()');
-            }
-          }
-          codeWriter.writeln(',');
         }
 
         final List<Annotation> httpHeadersAnnotations = method.metadata
@@ -312,5 +298,125 @@ class HttpClientCodeGenerator extends TachyonPluginCodeGenerator {
     }
 
     return codeWriter.content;
+  }
+
+  Future<void> _writeHttpPayloadData({
+    required final FormalParameter bodyParameter,
+    required final CodeWriter codeWriter,
+    required final TachyonDeclarationFinder declarationFinder,
+  }) async {
+    final String parameterName = bodyParameter.name!.lexeme;
+    TachyonDartType dartType = TachyonDartType.dynamic;
+
+    if (bodyParameter is SimpleFormalParameter) {
+      dartType = bodyParameter.type.customDartType;
+    } else if (bodyParameter is DefaultFormalParameter &&
+        bodyParameter.parameter is SimpleFormalParameter) {
+      dartType = (bodyParameter.parameter as SimpleFormalParameter).type.customDartType;
+    }
+
+    if (dartType.isPrimitive || dartType.isDynamic || dartType.isCollection) {
+      codeWriter.write('data: $parameterName,');
+    } else if (dartType.isUri) {
+      codeWriter.write('data: $parameterName.toString(),');
+    } else if (dartType.isDateTime) {
+      codeWriter.write('data: $parameterName.toIso8601String(), ');
+    } else {
+      final NamedCompilationUnitMember? variableTypeDeclaration = await declarationFinder
+          .findClassOrEnum(dartType.name)
+          .then((ClassOrEnumDeclarationMatch? match) => match?.node);
+      if (variableTypeDeclaration is ClassDeclaration &&
+              variableTypeDeclaration.hasMethod('toJson') ||
+          variableTypeDeclaration is EnumDeclaration &&
+              variableTypeDeclaration.hasMethod('toJson')) {
+        codeWriter.write('data: $parameterName.toJson(),');
+      }
+    }
+  }
+
+  Future<void> _writeFormData({
+    required final MethodDeclaration methodDeclaration,
+    required final CodeWriter codeWriter,
+    required final TachyonDeclarationFinder declarationFinder,
+    required final Logger logger,
+    required final FileChangeBuildInfo buildInfo,
+  }) async {
+    bool formFieldAnnotationMatcher(Annotation annotation) =>
+        annotation.name.name.startsWith(HttpFormField.name);
+
+    final List<FormalParameter> formFieldsParameters =
+        methodDeclaration.parameters?.parameters.where((FormalParameter parameter) {
+              return parameter.metadata.firstWhereOrNull(formFieldAnnotationMatcher) != null;
+            }).toList(growable: false) ??
+            const <FormalParameter>[];
+
+    codeWriter
+      ..writeln('data: await (() async {')
+      ..writeln('final FormData data = FormData.fromMap({');
+
+    for (final FormalParameter parameter in formFieldsParameters) {
+      final AnnotationValueExtractor annotationValueExtractor =
+          AnnotationValueExtractor(parameter.metadata.firstWhere(formFieldAnnotationMatcher));
+
+      final String parameterName = parameter.name!.lexeme;
+      final String formFieldName = annotationValueExtractor.getString('name') ?? parameterName;
+      final bool isFile = annotationValueExtractor.getNamedConstructorName() == 'file';
+
+      TachyonDartType dartType = TachyonDartType.dynamic;
+      if (parameter is SimpleFormalParameter) {
+        dartType = parameter.type.customDartType;
+      } else if (parameter is DefaultFormalParameter &&
+          parameter.parameter is SimpleFormalParameter) {
+        dartType = (parameter.parameter as SimpleFormalParameter).type.customDartType;
+      }
+
+      if (isFile) {
+        if (dartType.isString) {
+          codeWriter.write("'$formFieldName': await MultipartFile.fromFile($parameterName");
+
+          final String? fileName = annotationValueExtractor.getString('fileName');
+          if (fileName != null) {
+            codeWriter.writeln(", filename: '$fileName'");
+          }
+
+          codeWriter.writeln('),');
+        } else {
+          logger
+            ..warning('Only a "String" type is valid for a form file field.')
+            ..warning(parameter.toSource());
+        }
+
+        continue;
+      }
+
+      if (dartType.isPrimitive || dartType.isCollection) {
+        codeWriter.writeln("'$formFieldName': $parameterName,");
+      } else if (dartType.isUri) {
+        codeWriter.writeln("'$formFieldName', '\$$parameterName.toString()',");
+      } else if (dartType.isDateTime) {
+        codeWriter.writeln("'$formFieldName', '\$$parameterName.toIso8601String()',");
+      } else {
+        final NamedCompilationUnitMember? variableTypeDeclaration = await declarationFinder
+            .findClassOrEnum(dartType.name)
+            .then((ClassOrEnumDeclarationMatch? match) => match?.node);
+        if (variableTypeDeclaration is ClassDeclaration &&
+                variableTypeDeclaration.hasMethod('toJson') ||
+            variableTypeDeclaration is EnumDeclaration &&
+                variableTypeDeclaration.hasMethod('toJson')) {
+          codeWriter.write("'$formFieldName': $parameterName.toJson(),");
+        }
+      }
+    }
+
+    final AnnotationValueExtractor multipartAnnotationValueExtractor = AnnotationValueExtractor(
+        methodDeclaration.metadata.getAnnotationWithName(HttpMultipart.name));
+
+    codeWriter
+      ..write('}, ')
+      ..write('ListFormat.')
+      ..write(multipartAnnotationValueExtractor.getEnumValue('listFormat') ?? 'multi')
+      ..writeln(');')
+      ..writeln('return data;')
+      ..writeln('})(),');
   }
 }

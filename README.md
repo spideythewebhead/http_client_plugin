@@ -228,19 +228,74 @@ See more options about tachyon by executing: `dart run tachyon --help`
 
 1. ### HttpHeader
 
-Annotates a method with an additional http header.
+   Annotates a method with an additional http header.
 
-```dart
-@HttpService()
-class AppHttpService {
+   ```dart
+   @HttpService()
+   class AppHttpService {
 
-   @HttpMethod.post('/user/:id')
-   @HttpHeader('Content-Type', 'application/json')
-   @HttpHeader('Accept', 'application/json')
-   FutureHttpResult<User> updateUser(@HttpPayload() Map<String, dynamic> data);
+      @HttpMethod.post('/user/:id')
+      @HttpHeader('Content-Type', 'application/json')
+      @HttpHeader('Accept', 'application/json')
+      FutureHttpResult<User> updateUser(@HttpPayload() Map<String, dynamic> data);
 
-}
-```
+   }
+   ```
+
+1. ### HttpMultipart
+
+   Annotates a method as a multipart request.
+
+   Optionally accepts a parameter `listFormat` which indicates how a list should be formatted - default value `MultipartListFormat.multi`. See options [here](https://github.com/spideythewebhead/http_client_plugin/tree/main/lib/src/multipart_list_format.dart).
+
+   ```dart
+   @HttpService()
+   class AppHttpService {
+
+      @HttpMethod.post('/user')
+      @HttpMultipart()
+      FutureHttpResult<User> updateUser({
+         @HttpFormField() required String username,
+         @HttpFormField() required String password,
+      });
+
+   }
+   ```
+
+1. ### HttpFormField
+
+   Annotates a method's parameter as form field for multipart request.
+
+   ```dart
+   @HttpService()
+   class AppHttpService {
+
+      @HttpMethod.post('/user')
+      @HttpMultipart()
+      FutureHttpResult<User> updateUser({
+         @HttpFormField() required String username,
+         @HttpFormField(name: 'pass') required String password,
+      });
+
+   }
+   ```
+
+   Multipart requests can also accept a file using the `HttpFormField.file` annotation. The parameter type for this annotation should be a String with a value that points to a file path.
+
+   ```dart
+   @HttpService()
+   class AppHttpService {
+
+      @HttpMethod.post('/user')
+      @HttpMultipart()
+      FutureHttpResult<User> updateUser({
+         @HttpFormField() required String username,
+         @HttpFormField(name: 'pass') required String password,
+         @HttpFormField.file() required String pathToFile,
+      });
+
+   }
+   ```
 
 ## Http services
 
@@ -294,4 +349,4 @@ Also `HttpResult` provides a helper when/maybeWhen methods that accept callbacks
 
 ### Example
 
-See example [here](https://github.com/spideythewebhead/http_client_plugin/tree/main/example)
+See example [here](https://github.com/spideythewebhead/http_client_plugin/tree/main/example).
