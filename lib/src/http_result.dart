@@ -4,6 +4,8 @@ part 'http_result.gen.dart';
 
 typedef FutureHttpResult<T> = Future<HttpResult<T>>;
 
+typedef HttpResultRecord<T> = (T?, Exception?, StackTrace?);
+
 @Union()
 sealed class HttpResult<T> {
   const HttpResult._();
@@ -14,4 +16,11 @@ sealed class HttpResult<T> {
     Exception exception, {
     StackTrace? stackTrace,
   }) = HttpResultFailure<T>;
+
+  HttpResultRecord<T> asRecord() {
+    return switch (this) {
+      HttpResultData<T> result => (result.data, null, null),
+      HttpResultFailure<T> result => (null, result.exception, result.stackTrace)
+    };
+  }
 }

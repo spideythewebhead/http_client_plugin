@@ -345,7 +345,9 @@ Http methods must be must have a return type of `FutureHttpResult<*>`.
 
   Contains the exception thrown from this request and optional stack trace.
 
-Also `HttpResult` provides a helper when/maybeWhen methods that accept callbacks based on the result.
+`HttpResult` provides helper methods (when & maybeWhen) that accept callbacks based on the result.
+
+Also you can use the method `asRecord` to covert the result into a record with the following format: `(T?, Exception?, StackTrace?)`
 
 ### Example
 
