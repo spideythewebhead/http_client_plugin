@@ -1,5 +1,6 @@
 // AUTO GENERATED - DO NOT MODIFY
 // ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, inference_failure_on_uninitialized_variable, inference_failure_on_function_return_type, inference_failure_on_untyped_parameter, deprecated_member_use_from_same_package
 // coverage:ignore-file
 
 part of 'jsonplaceholderapi.dart';
@@ -26,8 +27,8 @@ class _$PostImpl extends Post {
 
   factory _$PostImpl.fromJson(Map<dynamic, dynamic> json) {
     return _$PostImpl(
-      id: json['id'] as int,
-      userId: json['userId'] as int,
+      id: (json['id'] as num).toInt(),
+      userId: (json['userId'] as num).toInt(),
       title: json['title'] as String,
       body: json['body'] as String,
     );
@@ -44,7 +45,7 @@ class _$PostImpl extends Post {
   }
 
   @override
-  bool operator ==(Object? other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         other is Post &&
             runtimeType == other.runtimeType &&
@@ -105,8 +106,8 @@ class _$CommentImpl extends Comment {
 
   factory _$CommentImpl.fromJson(Map<dynamic, dynamic> json) {
     return _$CommentImpl(
-      id: json['id'] as int,
-      postId: json['postId'] as int,
+      id: (json['id'] as num).toInt(),
+      postId: (json['postId'] as num).toInt(),
       name: json['name'] as String,
       email: json['email'] as String,
       body: json['body'] as String,
@@ -125,7 +126,7 @@ class _$CommentImpl extends Comment {
   }
 
   @override
-  bool operator ==(Object? other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         other is Comment &&
             runtimeType == other.runtimeType &&

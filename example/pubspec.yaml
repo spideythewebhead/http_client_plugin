@@ -7,12 +7,12 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  dio: ^5.1.1
+  dio: ^5.7.0
   http_client_plugin:
     path: ../
-  data_class_plugin: ^1.0.1
+  data_class_plugin: ^1.5.1
 
 dev_dependencies:
-  lints: ^2.0.0
-  tachyon: ^0.0.5
-  test: ^1.21.0
+  lints: ^5.0.0
+  tachyon: ^0.3.1
+  test: ^1.25.8

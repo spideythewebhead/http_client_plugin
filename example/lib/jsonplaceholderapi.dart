@@ -79,13 +79,13 @@ abstract class PostsHttpService {
 
   PostsHttpService overrideHttpClient(Dio client);
 
-  @HttpMethod.get('')
+  @HttpMethod.get()
   FutureHttpResult<List<Post>> getAll();
 
   @HttpMethod.get('/:id')
   FutureHttpResult<Post> getById(@PathParam() int id);
 
-  @HttpMethod.post('')
+  @HttpMethod.post()
   FutureHttpResult<Post> createPost(@HttpPayload() Map<String, dynamic> data);
 }
 
@@ -100,6 +100,6 @@ abstract class CommentsHttp {
 
   CommentsHttp overrideHttpClient(Dio client);
 
-  @HttpMethod.get('')
+  @HttpMethod.get()
   FutureHttpResult<List<Comment>> get(@QueryParam() int postId);
 }

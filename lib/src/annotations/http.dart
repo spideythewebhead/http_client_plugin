@@ -12,10 +12,10 @@ class HttpService {
 class HttpMethod {
   static const String name = 'HttpMethod';
 
-  const HttpMethod.get(String path);
-  const HttpMethod.post(String path);
-  const HttpMethod.delete(String path);
-  const HttpMethod.put(String path);
+  const HttpMethod.get([String path = '']);
+  const HttpMethod.post([String path = '']);
+  const HttpMethod.delete([String path = '']);
+  const HttpMethod.put([String path = '']);
 }
 
 @Target(<TargetKind>{TargetKind.method})

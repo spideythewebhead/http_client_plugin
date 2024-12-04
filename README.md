@@ -6,10 +6,7 @@ This plugin allows you to generate http services using `Dio` as your http client
 
 ## How it works
 
-**Http Client Plugin** uses `Tachyon` as its build engine to provide fast code generation. Also this plugin uses the [analyzer](https://pub.dev/packages/analyzer) system and [analyzer plugin](https://pub.dev/packages/analyzer_plugin)
-to get access on the source code, parse it and provide `code actions` based on that.
-
-These `code actions` are similar to the ones provide by the language - e.g. `wrap with try/catch` - so you don't need to rely on snippets or manually typing any boilerplate code.
+**Http Client Plugin** uses `Tachyon` as its build engine to provide fast code generation.
 
 ## Installation
 
@@ -36,35 +33,6 @@ These `code actions` are similar to the ones provide by the language - e.g. `wra
      - http_client_plugin # register http_client_plugin
    ```
 
-1. Update your `analysis_options.yaml` (to enable `code actions`)
-
-   **Minimal analysis_options.yaml**
-
-   ```yaml
-   include: package:lints/recommended.yaml
-
-   # You need to register the plugin under analyzer > plugins
-   analyzer:
-     plugins:
-       - http_client_plugin
-   ```
-
-1. Restart the analysis server
-
-   **VSCode**
-
-   1. Open the Command Palette
-      1. **Windows/Linux:** Ctrl + Shift + P
-      1. **MacOS:** ⌘ + Shift + P
-   1. Type and select "Dart: Restart Analysis Server"
-
-   **IntelliJ**
-
-   1. Open Find Action
-      1. **Windows/Linux:** Ctrl + Shift + A
-      1. **MacOS:** ⌘ + Shift + A
-   1. Type and select "Restart Dart Analysis Server"
-
 ## Generate the code you want!
 
 ### HttpService Annotation
@@ -88,26 +56,6 @@ These `code actions` are similar to the ones provide by the language - e.g. `wra
    }
    ```
 
-1. Run code actions on your IDE
-
-   VSCode
-
-   1. **Windows/Linux:** Ctrl + .
-   1. **MacOS:** ⌘ + .
-
-   Intellij
-
-   1. **Windows/Linux:** Alt + Enter
-   1. **MacOS:** ⌘ + Enter
-
-1. Select `Generate http services`
-
-<img src="https://raw.githubusercontent.com/spideythewebhead/http_client_plugin/main/assets/screenshots/generate_http_services.png">
-
-This will generate all the boilerplate code on the source file.
-
-Now to generate the part file code you need to run tachyon.
-
 Executing tachyon:
 
 `dart run tachyon build`
@@ -125,8 +73,17 @@ See more options about tachyon by executing: `dart run tachyon --help`
    Example:
 
    ```dart
+   part 'app_http_service.gen.dart';
+
    @HttpService('/api/v0') // all paths will be prefixed with /api/v0
    class AppHttpService {
+
+      AppHttpService._();
+
+      factory AppHttpService(
+         Dio client, [
+         String pathPrefix,
+      ]) = _$AppHttpServiceImpl;
 
       @HttpMethod.get('/ping') // this will become base url + /api/v0 + /ping
       FutureHttpResult<void> ping();
@@ -345,9 +302,8 @@ Http methods must have a return type of `FutureHttpResult<*>`.
 
   Contains the exception thrown from this request and optional stack trace.
 
-`HttpResult` provides helper methods (when & maybeWhen) that accept callbacks based on the result.
-
-Also you can use the method `asRecord` to covert the result into a record with the following format: `(T?, Exception?, StackTrace?)`
+`HttpResult` is a sealed class where you can apply pattern matching.
+Also it provides helper methods (`when` & `maybeWhen`) that accept callbacks based on the result.
 
 ### Example
 

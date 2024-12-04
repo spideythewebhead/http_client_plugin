@@ -1,4 +1,4 @@
-library http_client_plugin;
+library;
 
 export 'src/annotations/http.dart';
 export 'src/http_result.dart';

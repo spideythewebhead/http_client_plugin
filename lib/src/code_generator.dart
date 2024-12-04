@@ -70,7 +70,7 @@ class HttpClientCodeGenerator extends TachyonPluginCodeGenerator {
         }
         final NamedCompilationUnitMember? returnTypeClassDeclaration = await declarationFinder
             .findClassOrEnum(customDartType.name)
-            .then((ClassOrEnumDeclarationMatch? match) => match?.node);
+            .then((FinderDeclarationMatch<NamedCompilationUnitMember>? match) => match?.node);
         if (returnTypeClassDeclaration is! ClassDeclaration ||
             !returnTypeClassDeclaration.metadata.hasAnnotationWithName(HttpService.name)) {
           continue;
@@ -175,7 +175,7 @@ class HttpClientCodeGenerator extends TachyonPluginCodeGenerator {
         }
 
         final String httpMethod = httpRouteAnnotation.getNamedConstructorName() ?? '';
-        String routePath = httpRouteAnnotation.getPositionedString(0)!;
+        String routePath = httpRouteAnnotation.getPositionedString(0) ?? '';
         if (routePath.isNotEmpty && routePath[0] == '/') {
           routePath = routePath.substring(1);
         }
@@ -324,7 +324,7 @@ class HttpClientCodeGenerator extends TachyonPluginCodeGenerator {
     } else {
       final NamedCompilationUnitMember? variableTypeDeclaration = await declarationFinder
           .findClassOrEnum(dartType.name)
-          .then((ClassOrEnumDeclarationMatch? match) => match?.node);
+          .then((FinderDeclarationMatch<NamedCompilationUnitMember>? match) => match?.node);
       if (variableTypeDeclaration is ClassDeclaration &&
               variableTypeDeclaration.hasMethod('toJson') ||
           variableTypeDeclaration is EnumDeclaration &&
@@ -398,7 +398,7 @@ class HttpClientCodeGenerator extends TachyonPluginCodeGenerator {
       } else {
         final NamedCompilationUnitMember? variableTypeDeclaration = await declarationFinder
             .findClassOrEnum(dartType.name)
-            .then((ClassOrEnumDeclarationMatch? match) => match?.node);
+            .then((FinderDeclarationMatch<NamedCompilationUnitMember>? match) => match?.node);
         if (variableTypeDeclaration is ClassDeclaration &&
                 variableTypeDeclaration.hasMethod('toJson') ||
             variableTypeDeclaration is EnumDeclaration &&

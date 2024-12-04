@@ -146,18 +146,26 @@ void main() async {
   switch (getUserResult) {
     case HttpResultData<User>(:final User data):
       print(data);
+      break;
+
     case HttpResultFailure<User>(:final Exception exception) when exception is DioException:
       print(exception);
+      break;
+
     default:
       print('Something went bad');
+      break;
   }
 
   final HttpResult<Post> getPost = await httpService.jsonPlaceholder.posts.getById(1);
-  switch (getPost.asRecord()) {
-    case (Post? post, _, _) when post != null:
+  switch (getPost) {
+    case HttpResultData<Post>(data: final Post post):
       print('\nGot post');
       print(post);
-    case (_, Exception? exception, _) when exception != null:
+      break;
+
+    case HttpResultFailure<Post>(:final Exception exception):
       print(exception);
+      break;
   }
 }
