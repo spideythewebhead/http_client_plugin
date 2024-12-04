@@ -1,6 +1,6 @@
 name: http_client_plugin
 description: A wrapper http client generator that allows you to quickly create http services.
-version: 0.0.1-dev
+version: 0.0.2-dev
 
 homepage: https://github.com/spideythewebhead/http_client_plugin
 repository: https://github.com/spideythewebhead/http_client_plugin
